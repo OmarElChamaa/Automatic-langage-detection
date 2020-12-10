@@ -7,16 +7,16 @@ vpath %.h include
 
 
 CC=gcc
-CFLAGS += -g -Wall -Wextra
+CFLAGS += -g -Wall -Wextra -std=gnu99
 
-exe: main.o utils.o stack.o trie.o 
+exe: main.o utils.o stack.o trie.o dawg.o 
 	$(CC) -o $@ $^ $(CFLAGS) 
 
-main.o : main.c trie.h stack.h 
+main.o : main.c trie.h stack.h  dawg.h
 trie.o : trie.c trie.h stack.h utils.h
 stack.o : stack.c stack.h trie.h
-utils.o: utils.c utils.h stack.h trie.h 
-dawg.o: dawg.c utils.h stack.h trie.h dawg.h
+utils.o : utils.c utils.h stack.h trie.h 
+dawg.o : dawg.c utils.h stack.h trie.h dawg.h
 
 /%.o : %.c 
 		$(CC) $(CFLAGS) -c $< -o $@

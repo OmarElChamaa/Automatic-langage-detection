@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "dawg.h"
 #include "trie.h"
+#include "hashmap.h"
 
 /*
  * Copy this function template to construct either a DAWG or a trie 
@@ -16,7 +17,7 @@ void construct(char *dict) {
     // ...
     //DAWG * dawg=newDawg(0);
 
-    Trie * trie=nouvTrie();
+    // Trie * trie=nouvTrie();
     
 
     char *line = NULL;
@@ -58,11 +59,11 @@ int main(int argc, char* argv[]) {
 
     // Here listen for user input, parse it and detect the language of the given text
     // To complete ...
-        Trie * trie=nouvTrie();
+    //     Trie * trie=nouvTrie();
 
-    trieInsertion(trie,"pirate");
-    trieInsertion(trie,"patate");
-    trieInsertion(trie,"oracle");
+    // trieInsertion(trie,"pirate");
+    // trieInsertion(trie,"patate");
+    // trieInsertion(trie,"oracle");
 
 
     // if(trieRecherche(trie,"oracle")==false){
@@ -71,6 +72,17 @@ int main(int argc, char* argv[]) {
     // else{
     //     printf("here \n");
     // }
-    
+    (void)argc;
+    (void)argv;
+
+    const unsigned initial_size=2;
+    struct hashmap_s hashmap ;
+    if (0 != hashmap_create(initial_size, &hashmap)) {
+        printf("Encule de ta mere \n");
+    }
+
+    // DAWG * dawg =newDawg();
+    // dawgInsertion(dawg,"ayre",hashmap);
+
     return 0;
 }
