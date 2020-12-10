@@ -18,6 +18,97 @@ size_t ascii_to_index(char c) {
 }
 
 /**
+ * Change array index to ASCII character
+ */
+
+char * index_to_ascii(int index){
+    switch (index)
+    {
+    case 0:
+        return "a" ;
+        break;
+    case 1:
+        return "b" ;
+        break;
+    case 2:
+        return "c" ;
+        break;
+    case 3:
+        return "d" ;
+        break; 
+    case 4:
+        return "e" ;
+        break;
+    case 5:
+        return "f" ;
+        break;
+    case 6:
+        return "g" ;
+        break;
+    case 7:
+        return "h" ;
+        break;
+    case 8:
+        return "i" ;
+        break;
+    case 9:
+        return "j" ;
+        break;
+    case 10:
+        return "k" ;
+        break;
+    case 11:
+        return "l" ;
+        break;
+    case 12:
+        return "m" ;
+        break;
+    case 13:
+        return "n" ;
+        break;
+    case 14:
+        return "o" ;
+        break;
+    case 15:
+        return "p" ;
+        break;
+    case 16:
+        return "q" ;
+        break;
+    case 17:
+        return "r" ;
+        break;
+    case 18:
+        return "s" ;
+        break;
+    case 19:
+        return "t" ;
+        break;
+    case 20:
+        return "u" ;
+        break;
+    case 21:
+        return "v" ;
+        break;
+    case 22:
+        return "w" ;
+        break;
+    case 23:
+        return "x" ;
+        break;
+    case 24:
+        return "y" ;
+        break;
+    case 25:
+        return "z" ;
+        break;
+    default:
+        perror("character not found \n");
+        break;
+    }
+}
+
+/**
  * Remove char from string at the given index
  */
 void remove_char(char *word, size_t index) {

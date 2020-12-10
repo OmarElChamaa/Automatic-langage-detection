@@ -75,6 +75,8 @@ bool isHashmapVide(struct hashmap_s hashmap){
 
     si le sommet est la fin d'un mot strlen(key) sera que 1 
     comme elle ne pocede pas d'arete sortante 
+
+    pour chaque arrete sortante, on ajoute 
 */
 
 char * create_key(DAWG * sommet){
@@ -97,7 +99,8 @@ char * create_key(DAWG * sommet){
     for(int i = 0 ; i<ALPHABET_TAILLE;i++){
         if(sommet->enfants[i]!=NULL){
             int id_sommet_droit= sommet->enfants[i]->id;
-            asprintf(&key,"%s/%d",key,id_sommet_droit);
+            char * lettre=index_to_ascii(i);
+            asprintf(&key,"%s/%s!%d",key,lettre,id_sommet_droit);
         }
     }
     
@@ -120,6 +123,38 @@ DAWG * Minimiser(DAWG * racine ,struct hashmap_s hashmap,char * key,char * word_
     // }
     
     
+}
+
+bool recherche_mot (DAWG * racine, char * mot){
+    size_t niveau = 0 ;
+    size_t index =0 ;
+    size_t longueurMot = strlen(mot);
+
+    DAWG * nouvelleInsertion = racine;
+
+    for(;niveau<longueurMot;niveau++){
+        index =ascii_to_index(mot[niveau]);
+
+        //si vide donc automatiquement faux
+        if(nouvelleInsertion->enfants[index]==NULL){
+            return false ;
+        }
+        nouvelleInsertion = nouvelleInsertion->enfants[index];
+    }
+    return (nouvelleInsertion->finMot==true && nouvelleInsertion != NULL );
+} 
+
+/*
+Dans cette fonction ,
+notre but est de chercher un sommet equivalent du parametre "sommet" dans la hashmap.
+on va essayer de trouver un sommet avec les memes aretes sortantes pour eventuellement 
+pouvoir minimiser.
+Cette fonction nous retourne le sommet equivalent .
+*/
+
+
+DAWG * sommet_equivalent(DAWG * racine,DAWG * sommet){
+
 }
 
 
