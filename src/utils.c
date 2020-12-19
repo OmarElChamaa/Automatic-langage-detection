@@ -106,6 +106,7 @@ char * index_to_ascii(int index){
         perror("character not found \n");
         break;
     }
+    exit(EXIT_FAILURE);
 }
 
 /**

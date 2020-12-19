@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int id_sommet_precedent = 0 ;
-char * cle_dernier_sommet ;
+int id_courant = 1;
+char * last_word_inserted;
 
 
 typedef struct DAWG
@@ -16,11 +16,20 @@ typedef struct DAWG
     bool finMot;
 }DAWG;
 
+
+
 typedef struct ARETE{
     char label ;
     struct DAWG * sommetGauche ; 
     struct DAWG * sommetDroit ; 
 }ARETE;
+
+typedef struct DATA{
+    struct hashmap_s hashmap ;
+    struct stack *pile ;
+}DATA ;
+
+
 
 DAWG * newDawg() {
     DAWG * dawg=(DAWG * )malloc(sizeof(DAWG));
@@ -49,129 +58,104 @@ ARETE * newARETE(){
     exit(0);
 }
 
-/* true if empty , false if not */
-
-
-bool isHashmapVide(struct hashmap_s hashmap){
-    unsigned nbrElem;
-    if((nbrElem=hashmap_num_entries(&hashmap))==0){
-        printf("nb Mots dans la hashmap = %d \n",nbrElem);
-        return true ; 
-    }
-    return false ;
+DATA * newDATA(){
+    DATA * data=(DATA * )malloc(sizeof(DATA ));
+    int size = 64 ;
+    hashmap_create(size,&data->hashmap);
+    data->pile=new_stack(50);
+    return data;
 }
 
-
-/* 
-    on prend une cle de forme :
-    0e!50
-    
-    ou char[0]==0 veut dire que 
-    le sommet n'est pas la fin d'un mot
-
-    char[1]==e est le label de l'arete sortante 
-    char[2]==! est le separateur, tout ce qui vient apres est l'id 
-    du sommet droite 
-
-    si le sommet est la fin d'un mot strlen(key) sera que 1 
-    comme elle ne pocede pas d'arete sortante 
-
-    pour chaque arrete sortante, on ajoute 
-*/
 
 char * create_key(DAWG * sommet){
     char * id_sommet_droit;
     asprintf(&id_sommet_droit,"%d",sommet->id);
     char * separator="!";
 
-    char is_word_end;
+    char * is_word_end;
     if(sommet->finMot==true){
         is_word_end="1";
-        return is_word_end;
         
     }else
     {
         is_word_end="0";
     }
-    
-    char * key =strcat(&is_word_end,separator);
 
-    for(int i = 0 ; i<ALPHABET_TAILLE;i++){
+    char * key =concat(is_word_end,separator);
+
+
+    for(int i = 0 ; i<ALPHABET_TAILLE;i++){    
         if(sommet->enfants[i]!=NULL){
-            int id_sommet_droit= sommet->enfants[i]->id;
+            int id_sommet_droit= sommet->enfants[i]->id; 
             char * lettre=index_to_ascii(i);
-            asprintf(&key,"%s/%s!%d",key,lettre,id_sommet_droit);
+            asprintf(&key,"%s/%s!%d",key,lettre,id_sommet_droit); 
         }
     }
-    
     return key;
+    
+}
+
+
+int profondeur(char * word_to_insert){
+    int p=0 ;
+    if(last_word_inserted==NULL){
+        return 0 ;
+    }
+    int x = 0;
+    int i = 0;
+    while(i<strlen(last_word_inserted) && x<strlen(word_to_insert)
+    && word_to_insert[x]==last_word_inserted[i]){
+        p++;
+        x++;
+        i++;
+    }
+    return p ;
 }
 
 /*pour supprimer un sommet qui n'est pas encore dans la hashmap */
-DAWG * supprimer_sommet(DAWG * sommet){
+void supprimer_sommet(DAWG * sommet){
     free(sommet);
 }
 
 
-
-DAWG * Minimiser(DAWG * racine ,struct hashmap_s hashmap,char * key,char * word_to_insert,int id,int profondeur,struct stack * pile){
-    
-    // int n = strlen(word_to_insert);
-    // for(int i = 0 ; i<stack_size;i++){
-    //     ARETE * arete = stack_pop(pile);
-
-    // }
-    
-    
-}
-
-bool recherche_mot (DAWG * racine, char * mot){
-    size_t niveau = 0 ;
-    size_t index =0 ;
-    size_t longueurMot = strlen(mot);
-
-    DAWG * nouvelleInsertion = racine;
-
-    for(;niveau<longueurMot;niveau++){
-        index =ascii_to_index(mot[niveau]);
-
-        //si vide donc automatiquement faux
-        if(nouvelleInsertion->enfants[index]==NULL){
-            return false ;
-        }
-        nouvelleInsertion = nouvelleInsertion->enfants[index];
+DAWG * verifier(char * key,struct hashmap_s hashmap){
+    DAWG * G = newDawg();
+    if((G=hashmap_get(&hashmap,key,strlen(key)))==NULL){
+        return NULL ;
     }
-    return (nouvelleInsertion->finMot==true && nouvelleInsertion != NULL );
-} 
-
-/*
-Dans cette fonction ,
-notre but est de chercher un sommet equivalent du parametre "sommet" dans la hashmap.
-on va essayer de trouver un sommet avec les memes aretes sortantes pour eventuellement 
-pouvoir minimiser.
-Cette fonction nous retourne le sommet equivalent .
-*/
-
-
-DAWG * sommet_equivalent(DAWG * racine,DAWG * sommet){
-
+    return G ;
 }
 
 
-DAWG * dawgInsertion(DAWG * racine ,char * word_to_insert,struct hashmap_s hashmap,
-char * dernier_noeud_inserer,int id_precedent){
+
+DAWG * minimiser(int profondeur,DATA * data){
+    while(stack_size(data->pile)>profondeur){
+        ARETE * a = stack_pop(data->pile);
+        char * cle = create_key(a->sommetDroit);
+
+        DAWG * G=verifier(cle,data->hashmap);
+        printf("Arete= %c \n Key =%s \n",a->label,cle);
+
+        if(G==NULL){
+            hashmap_put(&data->hashmap,cle,strlen(cle),a->sommetDroit);
+            printf("on ajoute dans la hashmap le sommet %c\n",a->label);
+        }else{
+            supprimer_sommet(a->sommetDroit);
+            a->sommetDroit=G;
+        }
+    }
+    return NULL ;
+}
+
+DAWG * dawgInsertion(DAWG * racine ,char * word_to_insert,DATA * data){  
     
     int n = strlen(word_to_insert);
 
-    struct stack * pile ;
-
     int index = 0 ;
-
-    int p = 0 ;
+    int p = profondeur(word_to_insert);
+    printf("profondeur a minimiser : %d \n",p);
 
     DAWG * nouvelle_insertion=racine;
-
-    int id_initializer =id_sommet_precedent ;
 
     for(int i = 0;i<n;i++){
 
@@ -180,19 +164,56 @@ char * dernier_noeud_inserer,int id_precedent){
         if(nouvelle_insertion->enfants[index]==NULL){
 
             nouvelle_insertion->enfants[index]=newDawg();
+            
             DAWG * tmp = nouvelle_insertion->enfants[index];
-            tmp->id=id_initializer++;
+            
+            tmp->id=id_courant;
+            id_courant++;
 
             ARETE * arete = newARETE(); 
             arete->label=word_to_insert[i];
             arete->sommetGauche=nouvelle_insertion;
             arete->sommetDroit=tmp;
-
-            stack_push(pile,arete);
-        }
-
+            stack_push(data->pile,arete);
+            
+        }    
+        
         nouvelle_insertion=nouvelle_insertion->enfants[index];  
     }
+    printf("stack size is %d \n",stack_size(data->pile));
     nouvelle_insertion->finMot=true ;
-}
+    if(p!=0){
+        minimiser(p,data);
 
+        for(int i = p; i<strlen(word_to_insert);i++){
+        
+            ARETE * tmp = stack_peek(data->pile);
+            printf("arete depile apres minimisation %c \n ",tmp->label);
+
+            index=ascii_to_index(word_to_insert[i]);
+            printf("next letter %c \n",word_to_insert[i]);
+
+            DAWG * d = tmp->sommetDroit->enfants[index];
+            ARETE *  a =newARETE();
+            a->sommetDroit=d;
+            a->sommetGauche=tmp->sommetDroit;
+            a->label=word_to_insert[i];
+
+            stack_push(data->pile,a);
+
+        }
+
+        for(int i = 0 ;i<stack_size(data->pile);i++){
+            ARETE *  a =stack_pop(data->pile);
+            printf("||%c|| \n",a->label);
+        }
+    }
+
+    
+
+
+    // printf("stack size is apres minimisation %d \n",stack_size(data->pile));
+    // printf("elements in hashmap %d \n",data->hashmap.size);
+    last_word_inserted=word_to_insert;
+    return nouvelle_insertion ;
+}

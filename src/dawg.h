@@ -4,9 +4,16 @@
 
 typedef struct ARETE ARETE;
 typedef struct DAWG DAWG ;
+typedef struct DATA DATA;
 DAWG* newDawg();
-bool isHashmapVide(struct hashmap_s hashmap);
-DAWG * Minimiser(DAWG * racine ,struct hashmap_s hashmap,char * key,char * word_to_insert,int id,int profondeur,struct stack * pile);
+ARETE * newARETE();
+DATA * newDATA();
+// bool isHashmapVide(struct hashmap_s hashmap);
+void supprimer_sommet(DAWG * sommet);
 char * create_key(DAWG * sommet);
-DAWG * dawgInsertion(DAWG * racine ,char * word_to_insert,struct hashmap_s hashmap,
-char * dernier_noeud_inserer,int id_precedent);
+int profondeur(char * word_to_insert);
+// bool recherche_mot (DAWG * racine, char * mot);
+// DAWG * verifier(char * key,struct hashmap_s hashmap);
+// // void mini(DAWG * sommet,struct stack *pile,struct hashmap_s hashmap);
+DAWG * dawgInsertion(DAWG * racine ,char * word_to_insert,DATA * data);
+

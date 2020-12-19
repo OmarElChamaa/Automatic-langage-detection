@@ -5,6 +5,10 @@
 #include "dawg.h"
 #include "trie.h"
 #include "hashmap.h"
+#include "stack.h"
+
+
+#define WORDS_MAX 200
 
 /*
  * Copy this function template to construct either a DAWG or a trie 
@@ -52,7 +56,18 @@ void construct(char *dict) {
     // return ...;
 }
 
+
+
+
+
+
+
+
 int main(int argc, char* argv[]) {
+
+    char * tab[WORDS_MAX];
+
+
     construct("../dict/french-wordlist.txt");
     construct("../dict/english-wordlist.txt");
     construct("../dict/german-wordlist.txt");
@@ -75,14 +90,46 @@ int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    const unsigned initial_size=2;
-    struct hashmap_s hashmap ;
-    if (0 != hashmap_create(initial_size, &hashmap)) {
-        printf("Encule de ta mere \n");
+    DAWG * dawg =newDawg();
+    DATA * data=newDATA();
+    dawgInsertion(dawg,"a",data);
+    dawgInsertion(dawg,"abaissa",data);
+    // dawgInsertion(dawg,"abaissable",data);
+    // dawgInsertion(dawg,"abaissables",data);
+
+
+    int nb_mots = 0 ;
+    char str[]="omar is gay";
+    char* ptr =  strtok(str," ");
+    tab[0]=ptr ;
+    /* walk through other tokens */
+    while( ptr != NULL ) {
+      printf( " %s\n", ptr );
+      ptr = strtok(NULL, " ");
+      nb_mots ++ ;
+      tab[nb_mots]=ptr;
     }
 
-    // DAWG * dawg =newDawg();
-    // dawgInsertion(dawg,"ayre",hashmap);
 
+    int allemand =0;
+    int francais=0;
+    int anglais =0;
+
+    for(int i=0;i=<nb_mots;i++){
+
+        
+
+        // recherche(dawgF)==true {
+        //     francais ++ ;
+        // }
+        // recherche(dawgD)==true {
+        //     allemand ++ ;
+        // }
+        // recherche(dawgA)==true {
+        //     anglais++ ;
+        // }
+
+    }
+    
     return 0;
 }
