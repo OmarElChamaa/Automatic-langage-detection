@@ -1,20 +1,22 @@
 
 #include"trie.h"
 
-
-
-/*
-    finMot =true si la lettre est 
-    la fin d'un mot
-*/
-
+/**
+ * @brief Sommet Trie comportant un tableau de fils possibles et un 
+ * bool finMot
+ * @struct Trie
+ */
 typedef struct Trie
 {
     Trie *enfants[ALPHABET_TAILLE];
     bool finMot;
 }Trie;
 
-
+/**
+ * @brief Cree un trie vide
+ * 
+ * @return Trie* 
+ */
 Trie * nouvTrie(void){
     Trie * noeud = (Trie *)malloc(sizeof(Trie));
 
@@ -33,31 +35,66 @@ Trie * nouvTrie(void){
 }
 
 
+/**
+ * @brief Parcours le trie et free toute la memoire allouee. 
+ * 
+ * @param trie 
+ */
+void freeTrie(Trie* trie)
+{
+    for (int i = 0; i < ALPHABET_TAILLE; i++)
+    {
+        if (trie->enfants[i] != NULL)
+        {
+            freeTrie(trie->enfants[i]);
+        }
+        else
+        {
+            continue;
+        }
+    }
+    free(trie);
+}
+
+
+/**
+ * @brief Insere le mot passe en parametre depuis la racine
+ * 
+ * @param racine 
+ * @param mot 
+ */
 void trieInsertion(Trie * racine,const char * mot){
     size_t niveau = 0 ;
     size_t index =0 ;
     size_t longueurMot = strlen(mot);
 
     Trie * nouvelleInsertion = racine;
-    // printf("Longueur mot %ld \n",longueurMot);
 
     for(;niveau<longueurMot;niveau++){
-        // fprintf(stdout,"%c \n",mot[niveau]);
+
         index=ascii_to_index(mot[niveau]);
+
         if(nouvelleInsertion->enfants[index]==NULL){
-			
-            // printf("index is boucle for %ld",index);
+
             nouvelleInsertion->enfants[index]=nouvTrie();
+
         }
-        // printf("index is %ld \n",index);
         nouvelleInsertion=nouvelleInsertion->enfants[index];
     }
     nouvelleInsertion->finMot=true;
 }
 
+/**
+ * @brief Cherche un mot dans le trie
+ * 
+ * @param racine 
+ * @param mot 
+ * @return true si mot existe
+ * @return false sinon
+ */
 bool trieRecherche(Trie * racine ,const char * mot){
-    size_t niveau = 0 ;
-    size_t index =0 ;
+    size_t niveau = 0;
+    size_t index = 0;
     size_t longueurMot = strlen(mot);
 
     Trie * nouvelleInsertion = racine;
