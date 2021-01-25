@@ -50,7 +50,6 @@ DAWG * construct(char *dict) {
         dawgInsertion(dawg,line,data);
     }
     minimiser(0,data);
-    
 
     fclose(fp);
     free(line);
@@ -152,7 +151,7 @@ int main(int argc, char* argv[]) {
 
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     printf("temps insertion Dic Allemand dans DAWG %f seconds \n", time_spent);
-
+    
 /*****************************************/
 
     time_spent = 0.0;
@@ -230,6 +229,10 @@ int main(int argc, char* argv[]) {
     int francais=0;
     int anglais =0;
 
+    int allemandD =0;
+    int francaisD=0;
+    int anglaisD =0;
+
     for(int i=0;i<nb_mots;i++){
 
         /*****************************************/
@@ -275,6 +278,44 @@ int main(int argc, char* argv[]) {
         printf("temps recherche du mot %s Dic Anglais dans Trie %f seconds \n", tab[i],time_spent);
 
         /*****************************************/
+        time_spent=0.0;
+        begin=clock();
+
+        if(dawgRecherche(dawgAn,tab[i])==true ){
+            anglaisD++ ;
+        }
+
+        end = clock();
+
+        time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+        printf("temps recherche du mot %s Dic Anglais dans Dawg %f seconds \n", tab[i],time_spent);
+        /*****************************************/
+        time_spent=0.0;
+        begin=clock();
+
+        if(dawgRecherche(dawgFr,tab[i])==true ){
+            francaisD++ ;
+        }
+
+        end = clock();
+
+        time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+        printf("temps recherche du mot %s Dic Francais dans Dawg %f seconds \n", tab[i],time_spent);
+        
+        /*****************************************/
+        time_spent=0.0;
+        begin=clock();
+
+        if(dawgRecherche(dawgAl,tab[i])==true ){
+            allemandD++ ;
+        }
+
+        end = clock();
+
+        time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+        printf("temps recherche du mot %s Dic Allemand dans Dawg %f seconds \n", tab[i],time_spent);
+
+        /*****************************************/
 
     } 
     
@@ -291,6 +332,25 @@ int main(int argc, char* argv[]) {
             }else
             {
                 printf("langue non detectee : \n|mots detectes FR :%d\n|mots detectes An : %d\n|mots detectes Al : %d \n",francais,anglais,allemand);
+            }
+            
+        }
+        
+    }
+
+    if(francaisD>allemandD && francaisD>anglaisD){
+        printf("la Langue est probablement francais %d\n",francaisD);
+    }else
+    {
+        if(francaisD<allemandD && allemandD >anglaisD){
+            printf("dawg la Langue est probablement allemand %d\n",allemandD);
+        }else
+        {
+            if(anglaisD>allemandD && francaisD<anglaisD){
+                printf("dawg la Langue est probablement anglais %d\n",anglaisD);
+            }else
+            {
+                printf("dawg langue non detectee : \n|mots detectes FR :%d\n|mots detectes An : %d\n|mots detectes Al : %d \n",francaisD,anglaisD,allemandD);
             }
             
         }

@@ -410,7 +410,10 @@ DAWG *dawgInsertion(DAWG * racine ,char * word_to_insert,DATA * data){
         
     }
     nouvelle_insertion->finMot=true;
-    last_word_inserted=word_to_insert ;
+    int word_to_insert_size=strlen(word_to_insert);
+    last_word_inserted=(char*) realloc(last_word_inserted,word_to_insert_size);
+    strcpy(last_word_inserted,word_to_insert);
+    // last_word_inserted=word_to_insert ;
     return nouvelle_insertion ; 
     
 }
